@@ -28,22 +28,22 @@
   // Instead we measure each section's document-relative offset once (on
   // load and on resize) and do pure arithmetic on scroll.
   //
-  // On phones we also only animate the plain background layers (image +
-  // tint/gradient) and leave text, buttons and the speed legend static.
-  // Those background layers are cheap: no filter, no blend mode, nothing
-  // but a translate. The text blocks were the ones visibly detaching from
-  // their section during a fast swipe, so on touch/narrow screens we don't
-  // move them at all — depth still reads from the image drifting behind
-  // static text, at a fraction of the paint cost.
-  const BACKGROUND_LAYER_CLASSES = ['layer-back', 'layer-tint', 'statement-bg', 'stats-bg', 'outro-bg'];
-  const isBackgroundLayer = (el) => BACKGROUND_LAYER_CLASSES.some((c) => el.classList.contains(c));
-
-  const layers = Array.from(document.querySelectorAll('[data-speed]'))
-    .filter((el) => !isCompact || isBackgroundLayer(el))
-    .map((el) => {
-      const section = el.closest('section') || el.parentElement;
-      return { el, section, speed: parseFloat(el.dataset.speed), top: 0, height: 0 };
-    });
+  // On phones the whole scroll-linked transform is switched off, full
+  // stop — including the background images. Continuously re-transforming
+  // several full-bleed photos forces the browser to keep them on their
+  // own GPU-composited layers; under memory pressure a phone will evict
+  // an off-screen one and has to re-decode/re-upload it the moment it's
+  // needed again, which shows up as a black tile flashing in in the
+  // meantime. A static background never gets evicted mid-scroll: it's
+  // painted once, like on any ordinary page. Depth on mobile comes from
+  // the fade-in reveals and the floating particles instead, both of
+  // which are cheap and never touch layout on scroll.
+  const layers = isCompact
+    ? []
+    : Array.from(document.querySelectorAll('[data-speed]')).map((el) => {
+        const section = el.closest('section') || el.parentElement;
+        return { el, section, speed: parseFloat(el.dataset.speed), top: 0, height: 0 };
+      });
 
   function measureLayers() {
     layers.forEach((layer) => {

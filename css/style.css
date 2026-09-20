@@ -132,15 +132,24 @@ a { color: inherit; text-decoration: none; }
 
 .layer {
   position: absolute;
-  inset: -15% -5%;
+  /* Flush with the section by default (mobile: images are static, so
+     no extra travel room — and no oversized area to raster — is
+     needed). Desktop restores the overscan + will-change below, where
+     the JS actually animates these layers. */
+  inset: 0;
 }
 
 .layer-back {
   background-size: cover;
   background-position: center;
-  transform: scale(1.15);
-  will-change: transform;
 }
+
+/* Smaller, more compressed images by default (phones); desktop swaps
+   in the full-resolution ones below, where there's bandwidth and
+   memory headroom to spare. */
+.bg-lake { background-image: url('../assets/img/lake-mobile.jpg'); }
+.bg-city { background-image: url('../assets/img/city-mobile.jpg'); }
+.bg-road { background-image: url('../assets/img/road-mobile.jpg'); }
 
 /* Darkening is done with a plain, opaque gradient instead of a CSS
    `filter` + `mix-blend-mode` pair: those force the browser to
@@ -418,6 +427,19 @@ a { color: inherit; text-decoration: none; }
   .nav { backdrop-filter: blur(2px); }
   .nav.scrolled { backdrop-filter: blur(10px); }
   .legend-row { backdrop-filter: blur(6px); }
+}
+
+/* The scroll-linked image parallax itself is desktop-only (see js/main.js
+   — this breakpoint matches the `isCompact` check there). Below it the
+   `.layer` images are plain, static backgrounds; here we give them the
+   extra overscan room and the scale needed so nothing shows a gap while
+   they travel, and `will-change` so the compositor pre-promotes them. */
+@media (min-width: 821px) {
+  .layer { inset: -15% -5%; }
+  .layer-back { transform: scale(1.15); will-change: transform; }
+  .bg-lake { background-image: url('../assets/img/lake.jpg'); }
+  .bg-city { background-image: url('../assets/img/city.jpg'); }
+  .bg-road { background-image: url('../assets/img/road.jpg'); }
 }
 
 @media (prefers-reduced-motion: reduce) {
