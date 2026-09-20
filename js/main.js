@@ -8,6 +8,7 @@
 (() => {
   const doc = document.documentElement;
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isCompact = window.matchMedia('(max-width: 820px)').matches;
 
   /* ---------- Loader ---------- */
   const loader = document.getElementById('loader');
@@ -20,9 +21,39 @@
   const progressBar = document.getElementById('progressBar');
 
   /* ---------- Parallax layers ---------- */
-  const layers = Array.from(document.querySelectorAll('[data-speed]'));
+  // Reading layout (getBoundingClientRect) inside the scroll handler forces
+  // a synchronous reflow on every frame, which is the main cause of jank
+  // and dropped/late frames on phones — that lag is what made whole blocks
+  // of text appear to "leak" into the wrong section during a fast swipe.
+  // Instead we measure each section's document-relative offset once (on
+  // load and on resize) and do pure arithmetic on scroll.
+  //
+  // On phones we also only animate the plain background layers (image +
+  // tint/gradient) and leave text, buttons and the speed legend static.
+  // Those background layers are cheap: no filter, no blend mode, nothing
+  // but a translate. The text blocks were the ones visibly detaching from
+  // their section during a fast swipe, so on touch/narrow screens we don't
+  // move them at all — depth still reads from the image drifting behind
+  // static text, at a fraction of the paint cost.
+  const BACKGROUND_LAYER_CLASSES = ['layer-back', 'layer-tint', 'statement-bg', 'stats-bg', 'outro-bg'];
+  const isBackgroundLayer = (el) => BACKGROUND_LAYER_CLASSES.some((c) => el.classList.contains(c));
+
+  const layers = Array.from(document.querySelectorAll('[data-speed]'))
+    .filter((el) => !isCompact || isBackgroundLayer(el))
+    .map((el) => {
+      const section = el.closest('section') || el.parentElement;
+      return { el, section, speed: parseFloat(el.dataset.speed), top: 0, height: 0 };
+    });
+
+  function measureLayers() {
+    layers.forEach((layer) => {
+      const rect = layer.section.getBoundingClientRect();
+      layer.top = rect.top + window.scrollY;
+      layer.height = rect.height;
+    });
+  }
+
   let ticking = false;
-  let lastScrollY = window.scrollY;
 
   function updateParallax() {
     const scrollY = window.scrollY;
@@ -37,13 +68,17 @@
     nav.classList.toggle('scrolled', scrollY > 40);
 
     if (!prefersReduced) {
-      layers.forEach((el) => {
-        const speed = parseFloat(el.dataset.speed);
-        // Distance from this element's section top to the viewport,
-        // used so the offset is relative to each section (keeps layers
-        // aligned when sections are tall / stacked).
-        const rect = el.closest('section') ? el.closest('section').getBoundingClientRect() : el.getBoundingClientRect();
-        const sectionCenter = rect.top + rect.height / 2 - viewportH / 2;
+      // Skip sections nowhere near the viewport: writing a transform still
+      // costs a style recalculation, and on a long page most of the 20+
+      // parallax layers are off-screen at any given moment. This is the
+      // single biggest saving on the phone's main thread during a fast
+      // swipe, which is when frames were falling behind and stale content
+      // stayed painted a moment too long.
+      const margin = viewportH * 1.25;
+      layers.forEach(({ el, top, height, speed }) => {
+        const sectionTopVP = top - scrollY;
+        if (sectionTopVP + height < -margin || sectionTopVP > viewportH + margin) return;
+        const sectionCenter = top + height / 2 - scrollY - viewportH / 2;
         const offset = -sectionCenter * (1 - speed);
         el.style.transform = `translate3d(0, ${offset}px, 0)`;
       });
@@ -59,9 +94,24 @@
     }
   }
 
+  let resizeTimer;
+  function onResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      measureLayers();
+      updateParallax();
+    }, 150);
+  }
+
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
+  window.addEventListener('resize', onResize);
+  window.addEventListener('orientationchange', onResize);
+
+  measureLayers();
   updateParallax();
+  // Re-measure once more after full load in case fonts/images shifted
+  // section heights.
+  window.addEventListener('load', measureLayers);
 
   /* ---------- Reveal on scroll ---------- */
   const revealEls = document.querySelectorAll('.reveal');
@@ -122,9 +172,13 @@
     }
   }
 
-  spawnParticles('particles-lake', 22, { color: 'rgba(244,162,89,0.7)', minSize: 2, maxSize: 4 });
-  spawnParticles('particles-city', 18, { color: 'rgba(127,216,255,0.65)', minSize: 2, maxSize: 5 });
-  spawnParticles('particles-road', 26, { color: 'rgba(245,241,232,0.5)', minSize: 1.5, maxSize: 3, minDur: 4, maxDur: 9 });
+  // Fewer particles on phones: each one is a continuously-animating
+  // composited layer, and phone GPUs have far less headroom for that
+  // than a desktop.
+  const particleScale = isCompact ? 0.5 : 1;
+  spawnParticles('particles-lake', Math.round(22 * particleScale), { color: 'rgba(244,162,89,0.7)', minSize: 2, maxSize: 4 });
+  spawnParticles('particles-city', Math.round(18 * particleScale), { color: 'rgba(127,216,255,0.65)', minSize: 2, maxSize: 5 });
+  spawnParticles('particles-road', Math.round(26 * particleScale), { color: 'rgba(245,241,232,0.5)', minSize: 1.5, maxSize: 3, minDur: 4, maxDur: 9 });
 
   /* ---------- Smooth anchor scroll offset for fixed nav ---------- */
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
