@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horizons — Expérience Parallaxe</title>
+<meta name="description" content="Un projet fictif de démonstration d'effet parallaxe multi-couches, inspiré des showcases Wix Studio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loader" class="loader">
+  <span class="loader-word">HORIZONS</span>
+</div>
+
+<!-- Progress bar -->
+<div class="scroll-progress"><div class="scroll-progress-bar" id="progressBar"></div></div>
+
+<!-- Nav -->
+<nav class="nav" id="nav">
+  <span class="nav-logo">Horizons</span>
+  <ul class="nav-links">
+    <li><a href="#section-lake">Refuge</a></li>
+    <li><a href="#section-city">Cité</a></li>
+    <li><a href="#section-road">Voyage</a></li>
+    <li><a href="#section-outro">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ===================== HERO — LAC AU CRÉPUSCULE ===================== -->
+<section class="parallax-section" id="section-lake">
+  <div class="layer layer-back" data-speed="0.2" style="background-image:url('assets/img/lake.jpg')"></div>
+  <div class="layer layer-tint layer-tint-warm" data-speed="0.2"></div>
+
+  <div class="layer layer-mid" data-speed="0.45">
+    <div class="vignette"></div>
+  </div>
+
+  <div class="layer layer-front" data-speed="0.75">
+    <div class="floating-particles" id="particles-lake"></div>
+  </div>
+
+  <div class="hero-content" data-speed="0.55">
+    <p class="eyebrow reveal">Un projet fictif — étude d'effet parallaxe</p>
+    <h1 class="hero-title reveal">
+      <span class="line">Construire des</span>
+      <span class="line accent">mondes,</span>
+      <span class="line">façonner des rêves.</span>
+    </h1>
+    <p class="hero-sub reveal">Chaque couche défile à sa propre vitesse — premier plan rapide, plan intermédiaire, arrière-plan lent — pour donner de la profondeur à l'écran.</p>
+    <a href="#section-city" class="btn reveal">Descendre</a>
+  </div>
+
+  <div class="scroll-cue">
+    <span></span>
+    <p>Scroll</p>
+  </div>
+</section>
+
+<!-- ===================== TRANSITION 1 : texte plein écran ===================== -->
+<section class="statement-section">
+  <div class="statement-bg" data-speed="0.3"></div>
+  <h2 class="statement-text" data-speed="0.6">
+    La profondeur n'est pas un décor.<br>
+    <span class="accent">C'est un rythme.</span>
+  </h2>
+</section>
+
+<!-- ===================== VILLE AU CRÉPUSCULE ===================== -->
+<section class="parallax-section" id="section-city">
+  <div class="layer layer-back" data-speed="0.2" style="background-image:url('assets/img/city.jpg')"></div>
+  <div class="layer layer-tint layer-tint-cool" data-speed="0.2"></div>
+
+  <div class="layer layer-mid" data-speed="0.5">
+    <div class="light-streaks"></div>
+  </div>
+
+  <div class="layer layer-front" data-speed="0.85">
+    <div class="floating-particles" id="particles-city"></div>
+  </div>
+
+  <div class="hero-content hero-content-right" data-speed="0.55">
+    <p class="eyebrow reveal">Notre vitrine, votre aventure</p>
+    <h2 class="hero-title reveal">
+      <span class="line">Chaque rue</span>
+      <span class="line accent">raconte</span>
+      <span class="line">une histoire.</span>
+    </h2>
+    <p class="hero-sub reveal">Immeubles, lumières, silhouette d'un chat immobile — la ville respire à travers trois plans distincts qui se croisent au défilement.</p>
+    <a href="#section-road" class="btn btn-light reveal">Continuer</a>
+  </div>
+</section>
+
+<!-- ===================== TRANSITION 2 : chiffres ===================== -->
+<section class="stats-section">
+  <div class="stats-bg" data-speed="0.35"></div>
+  <div class="stats-grid" data-speed="0.6">
+    <div class="stat reveal">
+      <span class="stat-number" data-count="3">0</span>
+      <span class="stat-label">Couches de profondeur</span>
+    </div>
+    <div class="stat reveal">
+      <span class="stat-number" data-count="60">0</span>
+      <span class="stat-label">FPS visés</span>
+    </div>
+    <div class="stat reveal">
+      <span class="stat-number" data-count="100">0</span>
+      <span class="stat-label">% scroll-driven</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ROUTE AU COUCHER DE SOLEIL ===================== -->
+<section class="parallax-section" id="section-road">
+  <div class="layer layer-back" data-speed="0.15" style="background-image:url('assets/img/road.jpg')"></div>
+  <div class="layer layer-tint layer-tint-warm" data-speed="0.15"></div>
+
+  <div class="layer layer-mid" data-speed="0.55">
+    <div class="speed-blur"></div>
+  </div>
+
+  <div class="layer layer-front" data-speed="1.1">
+    <div class="floating-particles" id="particles-road"></div>
+  </div>
+
+  <div class="hero-content" data-speed="0.5">
+    <p class="eyebrow reveal">Premier plan rapide · plan intermédiaire moyen · arrière-plan lent</p>
+    <h2 class="hero-title reveal">
+      <span class="line">La route</span>
+      <span class="line accent">file,</span>
+      <span class="line">l'horizon reste.</span>
+    </h2>
+    <p class="hero-sub reveal">Une métaphore simple du parallaxe : plus un élément est proche, plus il bouge vite. C'est cette différence de vitesse qui crée l'illusion de profondeur.</p>
+  </div>
+
+  <!-- legend badges like the reference video -->
+  <div class="speed-legend" data-speed="0.9">
+    <div class="legend-row"><span class="dot dot-fast"></span>Premier plan (rapide)<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="legend-row"><span class="dot dot-mid"></span>Plan intermédiaire (moyen)<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="legend-row"><span class="dot dot-slow"></span>Arrière-plan (lent)<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+  </div>
+</section>
+
+<!-- ===================== OUTRO ===================== -->
+<section class="outro-section" id="section-outro">
+  <div class="outro-bg" data-speed="0.25"></div>
+  <div class="outro-content" data-speed="0.5">
+    <p class="eyebrow reveal">Fin de la démonstration</p>
+    <h2 class="outro-title reveal">Déployez la profondeur<br><span class="accent">sur votre propre site.</span></h2>
+    <p class="hero-sub reveal">Ce projet est une étude fictive : trois sections, trois ambiances, un seul principe — des vitesses de défilement différentes par couche.</p>
+    <a href="#section-lake" class="btn reveal">Revenir en haut ↑</a>
+  </div>
+  <footer class="footer">
+    <p>Projet fictif de démonstration — effet parallaxe. Inspiré de showcases Wix Studio.</p>
+  </footer>
+</section>
+
+<script src="js/main.js"></script>
+</body>
+</html>
